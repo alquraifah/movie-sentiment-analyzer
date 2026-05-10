@@ -1,0 +1,82 @@
+{
+  "Naive Bayes (TF-IDF)": {
+    "accuracy": 0.848,
+    "precision": 0.8421,
+    "recall": 0.8582,
+    "f1": 0.8501,
+    "confusion_matrix": [
+      [
+        4138,
+        801
+      ],
+      [
+        706,
+        4272
+      ]
+    ]
+  },
+  "Naive Bayes (BoW)": {
+    "accuracy": 0.8405,
+    "precision": 0.8447,
+    "recall": 0.8359,
+    "f1": 0.8403,
+    "confusion_matrix": [
+      [
+        4174,
+        765
+      ],
+      [
+        817,
+        4161
+      ]
+    ]
+  },
+  "Logistic Regression (TF-IDF)": {
+    "accuracy": 0.8862,
+    "precision": 0.8738,
+    "recall": 0.9038,
+    "f1": 0.8885,
+    "confusion_matrix": [
+      [
+        4289,
+        650
+      ],
+      [
+        479,
+        4499
+      ]
+    ]
+  },
+  "Logistic Regression (BoW)": {
+    "accuracy": 0.8679,
+    "precision": 0.8599,
+    "recall": 0.8803,
+    "f1": 0.87,
+    "confusion_matrix": [
+      [
+        4225,
+        714
+      ],
+      [
+        596,
+        4382
+      ]
+    ]
+  },
+  "Neural Network (TF-IDF)": {
+    "accuracy": 0.8653,
+    "precision": 0.8619,
+    "recall": 0.8712,
+    "f1": 0.8665,
+    "confusion_matrix": [
+      [
+        4244,
+        695
+      ],
+      [
+        641,
+        4337
+      ]
+    ]
+  }
+}

@@ -1,0 +1,202 @@
+{% extends "base.html" %}
+{% block title %}Home – Movie Sentiment Analyzer{% endblock %}
+
+{% block content %}
+
+<!-- ══════════════════════════════ HERO ══════════════════════════════════ -->
+<section class="hero">
+  <div class="hero-bg-grid"></div>
+  <div class="container hero-inner">
+
+    <div class="hero-badge mb-4">
+      <i class="fas fa-microchip me-2"></i>NLP + Machine Learning
+    </div>
+
+    <h1 class="hero-title">
+      Movie Sentiment<br>
+      <span class="gradient-text">Analyzer</span>
+    </h1>
+
+    <p class="hero-subtitle mx-auto">
+      Classify IMDB movie reviews as <span class="text-positive">Positive</span>
+      or <span class="text-negative">Negative</span> using advanced Natural Language
+      Processing and five Machine Learning models — trained on 50,000 real reviews.
+    </p>
+
+    <div class="hero-actions">
+      <a href="/analyzer" class="btn btn-glow btn-lg">
+        <i class="fas fa-wand-magic-sparkles me-2"></i>Analyze a Review
+      </a>
+      <a href="/comparison" class="btn btn-outline-glow btn-lg">
+        <i class="fas fa-chart-bar me-2"></i>View Results
+      </a>
+    </div>
+
+    <!-- Stats row -->
+    <div class="stats-row mt-5">
+      <div class="stat-box">
+        <span class="stat-value gradient-text">50K</span>
+        <span class="stat-label">Movie Reviews</span>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-box">
+        <span class="stat-value gradient-text">5</span>
+        <span class="stat-label">ML Models</span>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-box">
+        <span class="stat-value gradient-text">89.2%</span>
+        <span class="stat-label">Best Accuracy</span>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-box">
+        <span class="stat-value gradient-text">2</span>
+        <span class="stat-label">Vectorizers</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════ WHAT IS THIS ═══════════════════════════════ -->
+<section class="section-padded">
+  <div class="container">
+
+    <div class="section-header text-center mb-5">
+      <span class="section-tag">Overview</span>
+      <h2 class="section-title">What is Sentiment Analysis?</h2>
+      <p class="section-sub">
+        Sentiment analysis is an NLP technique that detects the emotional tone
+        behind text — helping machines understand human opinion at scale.
+      </p>
+    </div>
+
+    <div class="row g-4 justify-content-center">
+
+      <div class="col-md-4">
+        <div class="feature-card h-100">
+          <div class="feature-icon bg-purple">
+            <i class="fas fa-broom"></i>
+          </div>
+          <h5>Text Preprocessing</h5>
+          <p>HTML removal, punctuation stripping, lowercasing, stopword removal,
+             and Porter stemming transform raw reviews into clean tokens.</p>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="feature-card h-100">
+          <div class="feature-icon bg-blue">
+            <i class="fas fa-table-cells"></i>
+          </div>
+          <h5>Feature Extraction</h5>
+          <p>TF-IDF and Bag-of-Words vectorizers convert text into numerical
+             feature matrices with 5,000 features each, ready for ML input.</p>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="feature-card h-100">
+          <div class="feature-icon bg-teal">
+            <i class="fas fa-robot"></i>
+          </div>
+          <h5>ML Classification</h5>
+          <p>Naive Bayes, Logistic Regression, and Neural Network models are
+             trained and compared. The best model is deployed for live prediction.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════ PIPELINE STEPS ════════════════════════════ -->
+<section class="section-padded section-alt">
+  <div class="container">
+
+    <div class="section-header text-center mb-5">
+      <span class="section-tag">Pipeline</span>
+      <h2 class="section-title">End-to-End ML Pipeline</h2>
+    </div>
+
+    <div class="pipeline-grid">
+
+      <div class="pipeline-step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <h6>Load &amp; Inspect</h6>
+          <p>Read IMDB Dataset.csv, remove duplicates and null values.</p>
+        </div>
+      </div>
+
+      <div class="pipeline-arrow"><i class="fas fa-chevron-right"></i></div>
+
+      <div class="pipeline-step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <h6>Preprocess Text</h6>
+          <p>HTML → symbols → lowercase → stopwords → stemming.</p>
+        </div>
+      </div>
+
+      <div class="pipeline-arrow"><i class="fas fa-chevron-right"></i></div>
+
+      <div class="pipeline-step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <h6>Encode Labels</h6>
+          <p>positive → 1 &nbsp;/&nbsp; negative → 0</p>
+        </div>
+      </div>
+
+      <div class="pipeline-arrow"><i class="fas fa-chevron-right"></i></div>
+
+      <div class="pipeline-step">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <h6>Train / Test Split</h6>
+          <p>80% training &nbsp;/&nbsp; 20% testing (random_state=42).</p>
+        </div>
+      </div>
+
+      <div class="pipeline-arrow"><i class="fas fa-chevron-right"></i></div>
+
+      <div class="pipeline-step">
+        <div class="step-num">5</div>
+        <div class="step-body">
+          <h6>Vectorize</h6>
+          <p>TF-IDF and BoW, max_features=5000.</p>
+        </div>
+      </div>
+
+      <div class="pipeline-arrow"><i class="fas fa-chevron-right"></i></div>
+
+      <div class="pipeline-step">
+        <div class="step-num">6</div>
+        <div class="step-body">
+          <h6>Train &amp; Evaluate</h6>
+          <p>NB, LR, MLP — accuracy, precision, recall, F1.</p>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</section>
+
+<!-- ══════════════════════════ CTA BANNER ════════════════════════════════ -->
+<section class="section-padded">
+  <div class="container">
+    <div class="cta-banner text-center">
+      <h2 class="mb-3">Ready to analyze a review?</h2>
+      <p class="text-muted mb-4">
+        Paste any movie review and get an instant Positive / Negative prediction
+        with a confidence score — powered by Logistic Regression + TF-IDF.
+      </p>
+      <a href="/analyzer" class="btn btn-glow btn-lg">
+        <i class="fas fa-play me-2"></i>Try the Analyzer
+      </a>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

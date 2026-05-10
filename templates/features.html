@@ -1,0 +1,222 @@
+{% extends "base.html" %}
+{% block title %}Feature Extraction – Sentiment{% endblock %}
+
+{% block content %}
+
+<section class="section-padded">
+  <div class="container">
+
+    <!-- Header -->
+    <div class="section-header text-center mb-5">
+      <span class="section-tag"><i class="fas fa-layer-group me-1"></i>Vectorization</span>
+      <h2 class="section-title">Feature Extraction</h2>
+      <p class="section-sub">
+        Converting raw text into numerical matrices that machine learning models can process.
+        Two techniques are compared: <strong>Bag of Words</strong> and <strong>TF-IDF</strong>.
+      </p>
+    </div>
+
+    <!-- ── Shape info boxes ───────────────────────────────────────────── -->
+    <div class="row g-3 mb-5 justify-content-center">
+      <div class="col-sm-6 col-lg-3">
+        <div class="shape-box border-purple text-center p-4">
+          <div class="shape-label">TF-IDF</div>
+          <div class="shape-sub">Train Matrix</div>
+          <div class="shape-val">{{ shapes.tfidf_train }}</div>
+          <div class="shape-desc text-muted small mt-1">39,665 reviews × 5,000 features</div>
+        </div>
+      </div>
+      <div class="col-sm-6 col-lg-3">
+        <div class="shape-box border-blue text-center p-4">
+          <div class="shape-label">TF-IDF</div>
+          <div class="shape-sub">Test Matrix</div>
+          <div class="shape-val">{{ shapes.tfidf_test }}</div>
+          <div class="shape-desc text-muted small mt-1">9,917 reviews × 5,000 features</div>
+        </div>
+      </div>
+      <div class="col-sm-6 col-lg-3">
+        <div class="shape-box border-teal text-center p-4">
+          <div class="shape-label">Bag of Words</div>
+          <div class="shape-sub">Train Matrix</div>
+          <div class="shape-val">{{ shapes.bow_train }}</div>
+          <div class="shape-desc text-muted small mt-1">39,665 reviews × 5,000 features</div>
+        </div>
+      </div>
+      <div class="col-sm-6 col-lg-3">
+        <div class="shape-box border-gold text-center p-4">
+          <div class="shape-label">Bag of Words</div>
+          <div class="shape-sub">Test Matrix</div>
+          <div class="shape-val">{{ shapes.bow_test }}</div>
+          <div class="shape-desc text-muted small mt-1">9,917 reviews × 5,000 features</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Bag of Words ───────────────────────────────────────────────── -->
+    <div class="row g-4 mb-5">
+      <div class="col-lg-6">
+        <div class="glass-card p-4 h-100">
+          <div class="d-flex align-items-center gap-3 mb-4">
+            <div class="feature-icon bg-teal">
+              <i class="fas fa-bag-shopping"></i>
+            </div>
+            <div>
+              <h4 class="mb-0">Bag of Words</h4>
+              <p class="text-muted small mb-0">CountVectorizer  ·  max_features = 5,000</p>
+            </div>
+          </div>
+
+          <p>
+            Bag of Words (BoW) counts how many times each word appears in a document.
+            Each unique word across the corpus becomes a column in the feature matrix —
+            and each row is a review represented as a vector of word counts.
+          </p>
+
+          <h6 class="mt-4 mb-2 text-teal">How it works</h6>
+          <ol class="text-muted small">
+            <li>Build a vocabulary from the entire training corpus.</li>
+            <li>Limit to the top <strong>5,000</strong> most frequent words.</li>
+            <li>Represent each review as a count vector over this vocabulary.</li>
+          </ol>
+
+          <h6 class="mt-4 mb-2 text-teal">Example</h6>
+          <div class="code-block">
+            <span class="code-comment"># Review: "great film great acting"</span><br>
+            vocabulary = ["great", "film", "acting", "boring", ...]<br>
+            vector     = [  2,       1,       1,        0,    ...]
+          </div>
+
+          <div class="pros-cons mt-4">
+            <div class="pros">
+              <span class="pc-title text-positive"><i class="fas fa-plus me-1"></i>Pros</span>
+              <ul class="small">
+                <li>Simple and fast to compute</li>
+                <li>Works well with Naive Bayes</li>
+                <li>Captures word frequency</li>
+              </ul>
+            </div>
+            <div class="cons">
+              <span class="pc-title text-negative"><i class="fas fa-minus me-1"></i>Cons</span>
+              <ul class="small">
+                <li>Ignores word importance</li>
+                <li>Common words dominate</li>
+                <li>No semantic meaning</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── TF-IDF ──────────────────────────────────────────────────── -->
+      <div class="col-lg-6">
+        <div class="glass-card p-4 h-100">
+          <div class="d-flex align-items-center gap-3 mb-4">
+            <div class="feature-icon bg-purple">
+              <i class="fas fa-superscript"></i>
+            </div>
+            <div>
+              <h4 class="mb-0">TF-IDF</h4>
+              <p class="text-muted small mb-0">TfidfVectorizer  ·  max_features = 5,000</p>
+            </div>
+          </div>
+
+          <p>
+            Term Frequency–Inverse Document Frequency weighs each word by how
+            often it appears in a document relative to how rare it is across all
+            documents. Common words like "the" get low scores; distinctive words
+            get high scores.
+          </p>
+
+          <h6 class="mt-4 mb-2 text-purple">Formula</h6>
+          <div class="formula-box">
+            <span class="formula">TF-IDF(t, d) = TF(t, d) × IDF(t)</span><br>
+            <span class="formula-small">
+              TF(t,d) = count(t,d) / total_words(d)<br>
+              IDF(t)  = log( N / df(t) ) + 1
+            </span>
+          </div>
+
+          <h6 class="mt-4 mb-2 text-purple">How it works</h6>
+          <ol class="text-muted small">
+            <li>Compute term frequency (TF) for each word in each document.</li>
+            <li>Compute inverse document frequency (IDF) across the corpus.</li>
+            <li>Multiply TF × IDF → higher scores for rare, informative words.</li>
+          </ol>
+
+          <div class="pros-cons mt-4">
+            <div class="pros">
+              <span class="pc-title text-positive"><i class="fas fa-plus me-1"></i>Pros</span>
+              <ul class="small">
+                <li>Penalises common stop-words</li>
+                <li>Highlights unique terms</li>
+                <li>Better for LR / Neural Nets</li>
+              </ul>
+            </div>
+            <div class="cons">
+              <span class="pc-title text-negative"><i class="fas fa-minus me-1"></i>Cons</span>
+              <ul class="small">
+                <li>Slightly more expensive</li>
+                <li>Still no word order</li>
+                <li>Sparse matrix output</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Comparison table ───────────────────────────────────────────── -->
+    <div class="glass-card p-4 mb-5">
+      <h5 class="mb-4"><i class="fas fa-scale-balanced me-2 text-purple"></i>BoW vs TF-IDF — Side-by-Side</h5>
+      <div class="table-responsive">
+        <table class="table table-dark align-middle comparison-table">
+          <thead>
+            <tr>
+              <th>Property</th>
+              <th class="text-center">Bag of Words</th>
+              <th class="text-center">TF-IDF</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Representation</td>
+              <td class="text-center">Raw word counts</td>
+              <td class="text-center">Weighted scores</td></tr>
+            <tr><td>Handles stop-words</td>
+              <td class="text-center"><i class="fas fa-xmark text-negative"></i> No (by default)</td>
+              <td class="text-center"><i class="fas fa-check text-positive"></i> Yes (low IDF)</td></tr>
+            <tr><td>Highlights rare terms</td>
+              <td class="text-center"><i class="fas fa-xmark text-negative"></i> No</td>
+              <td class="text-center"><i class="fas fa-check text-positive"></i> Yes</td></tr>
+            <tr><td>Best paired with</td>
+              <td class="text-center">Naive Bayes</td>
+              <td class="text-center">Logistic Regression, Neural Net</td></tr>
+            <tr><td>Max accuracy (this project)</td>
+              <td class="text-center">~88.8%</td>
+              <td class="text-center badge-purple-inline">~89.2% ★</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ── Pipeline code ─────────────────────────────────────────────── -->
+    <div class="glass-card p-4">
+      <h5 class="mb-3"><i class="fas fa-code me-2 text-blue"></i>Vectorization Code</h5>
+      <div class="code-block large">
+<span class="code-kw">from</span> sklearn.feature_extraction.text <span class="code-kw">import</span> TfidfVectorizer, CountVectorizer
+
+<span class="code-comment"># TF-IDF</span>
+tfidf         = TfidfVectorizer(max_features=<span class="code-num">5000</span>)
+X_train_tfidf = tfidf.fit_transform(X_train)  <span class="code-comment"># shape (39665, 5000)</span>
+X_test_tfidf  = tfidf.transform(X_test)        <span class="code-comment"># shape  (9917, 5000)</span>
+
+<span class="code-comment"># Bag of Words</span>
+bow         = CountVectorizer(max_features=<span class="code-num">5000</span>)
+X_train_bow = bow.fit_transform(X_train)       <span class="code-comment"># shape (39665, 5000)</span>
+X_test_bow  = bow.transform(X_test)            <span class="code-comment"># shape  (9917, 5000)</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+{% endblock %}

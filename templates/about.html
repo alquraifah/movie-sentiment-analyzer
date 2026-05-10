@@ -1,0 +1,260 @@
+{% extends "base.html" %}
+{% block title %}About – Movie Sentiment{% endblock %}
+
+{% block content %}
+
+<section class="section-padded">
+  <div class="container">
+
+    <!-- Header -->
+    <div class="section-header text-center mb-5">
+      <span class="section-tag"><i class="fas fa-circle-info me-1"></i>Project</span>
+      <h2 class="section-title">About This Project</h2>
+      <p class="section-sub">
+        A complete end-to-end NLP pipeline for binary sentiment classification
+        of IMDB movie reviews — from raw text to live web predictions.
+      </p>
+    </div>
+
+    <!-- ── Overview ───────────────────────────────────────────────────── -->
+    <div class="row g-4 mb-5">
+      <div class="col-md-4">
+        <div class="insight-card border-purple text-center">
+          <div class="insight-icon text-purple mx-auto"><i class="fas fa-database"></i></div>
+          <h6>Dataset</h6>
+          <p class="text-muted small mb-0">
+            IMDB Movie Reviews — 50,000 labelled reviews
+            (25K positive, 25K negative). Sourced from the
+            Stanford AI Lab's Large Movie Review Dataset.
+          </p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="insight-card border-blue text-center">
+          <div class="insight-icon text-blue mx-auto"><i class="fas fa-code"></i></div>
+          <h6>Tech Stack</h6>
+          <p class="text-muted small mb-0">
+            Python · Flask · scikit-learn · NLTK · BeautifulSoup4
+            · pandas · Bootstrap 5 · Chart.js
+          </p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="insight-card border-teal text-center">
+          <div class="insight-icon text-teal mx-auto"><i class="fas fa-bullseye"></i></div>
+          <h6>Goal</h6>
+          <p class="text-muted small mb-0">
+            Binary classification: <strong>Positive</strong> vs
+            <strong>Negative</strong> sentiment — evaluated by
+            Accuracy, Precision, Recall and F1-Score.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── ML Pipeline Timeline ───────────────────────────────────────── -->
+    <div class="glass-card p-4 mb-5">
+      <h5 class="mb-4"><i class="fas fa-diagram-project me-2 text-purple"></i>Full ML Pipeline</h5>
+
+      <div class="timeline">
+
+        <div class="tl-item">
+          <div class="tl-dot bg-purple">1</div>
+          <div class="tl-body">
+            <h6>Import Libraries</h6>
+            <p class="text-muted small mb-0">
+              pandas, numpy, sklearn, nltk, BeautifulSoup — all standard
+              Python scientific libraries for NLP and ML.
+            </p>
+          </div>
+        </div>
+
+        <div class="tl-item">
+          <div class="tl-dot bg-blue">2</div>
+          <div class="tl-body">
+            <h6>Load &amp; Inspect IMDB Dataset</h6>
+            <p class="text-muted small mb-0">
+              Read <code>IMDB Dataset.csv</code> with pandas. Inspect shape,
+              column types, and sentiment distribution. Drop duplicates and nulls.
+            </p>
+          </div>
+        </div>
+
+        <div class="tl-item">
+          <div class="tl-dot bg-teal">3</div>
+          <div class="tl-body">
+            <h6>Text Preprocessing</h6>
+            <p class="text-muted small mb-2">Five sequential steps applied to every review:</p>
+            <ol class="text-muted small mb-0">
+              <li>Remove HTML tags with BeautifulSoup</li>
+              <li>Remove symbols and punctuation (<code>[^a-zA-Z]</code>)</li>
+              <li>Convert to lowercase</li>
+              <li>Remove English stop-words (NLTK)</li>
+              <li>Apply Porter Stemmer</li>
+            </ol>
+          </div>
+        </div>
+
+        <div class="tl-item">
+          <div class="tl-dot bg-gold">4</div>
+          <div class="tl-body">
+            <h6>Encode Sentiment Labels</h6>
+            <p class="text-muted small mb-0">
+              Map <code>positive → 1</code> and <code>negative → 0</code>
+              using pandas <code>.map()</code>.
+            </p>
+          </div>
+        </div>
+
+        <div class="tl-item">
+          <div class="tl-dot bg-purple">5</div>
+          <div class="tl-body">
+            <h6>Train / Test Split</h6>
+            <p class="text-muted small mb-0">
+              80/20 stratified split with <code>random_state=42</code>.
+              <strong>39,665</strong> training reviews, <strong>9,917</strong> test reviews.
+            </p>
+          </div>
+        </div>
+
+        <div class="tl-item">
+          <div class="tl-dot bg-blue">6</div>
+          <div class="tl-body">
+            <h6>Feature Extraction</h6>
+            <p class="text-muted small mb-0">
+              Both <strong>TF-IDF</strong> and <strong>Bag of Words</strong> vectorizers,
+              each limited to the top 5,000 features.
+              Vectorizers are fit on training data only to prevent data leakage.
+            </p>
+          </div>
+        </div>
+
+        <div class="tl-item">
+          <div class="tl-dot bg-teal">7</div>
+          <div class="tl-body">
+            <h6>Train Models</h6>
+            <p class="text-muted small mb-0">
+              Five model/vectorizer combinations trained and saved:
+              Naive Bayes ×2, Logistic Regression ×2, Neural Network ×1.
+            </p>
+          </div>
+        </div>
+
+        <div class="tl-item">
+          <div class="tl-dot bg-gold">8</div>
+          <div class="tl-body">
+            <h6>Evaluate &amp; Compare</h6>
+            <p class="text-muted small mb-0">
+              Accuracy, Precision, Recall, F1-Score and Confusion Matrix
+              computed for all models. Results saved to <code>models/metrics.json</code>.
+            </p>
+          </div>
+        </div>
+
+      </div><!-- /timeline -->
+    </div>
+
+    <!-- ── Preprocessing code ─────────────────────────────────────────── -->
+    <div class="row g-4 mb-5">
+      <div class="col-lg-6">
+        <div class="glass-card p-4 h-100">
+          <h5 class="mb-3"><i class="fas fa-broom me-2 text-teal"></i>Preprocessing Function</h5>
+          <div class="code-block large">
+<span class="code-kw">def</span> <span class="code-fn">preprocess_text</span>(text):
+    <span class="code-comment"># 1. Remove HTML tags</span>
+    text = BeautifulSoup(text, <span class="code-str">"lxml"</span>).get_text()
+    <span class="code-comment"># 2. Remove symbols / punctuation</span>
+    text = re.sub(<span class="code-str">r"[^a-zA-Z]"</span>, <span class="code-str">" "</span>, text)
+    <span class="code-comment"># 3. Lowercase</span>
+    text = text.lower()
+    <span class="code-comment"># 4. Tokenise and remove stopwords</span>
+    tokens = text.split()
+    stops  = set(stopwords.words(<span class="code-str">"english"</span>))
+    ps     = PorterStemmer()
+    <span class="code-comment"># 5. Stem each token</span>
+    tokens = [ps.stem(t) <span class="code-kw">for</span> t <span class="code-kw">in</span> tokens
+              <span class="code-kw">if</span> t <span class="code-kw">not in</span> stops]
+    <span class="code-kw">return</span> <span class="code-str">" "</span>.join(tokens)
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-6">
+        <div class="glass-card p-4 h-100">
+          <h5 class="mb-3"><i class="fas fa-brain me-2 text-purple"></i>Why These Models?</h5>
+
+          <div class="why-item mb-3">
+            <div class="why-title text-teal">
+              <i class="fas fa-bahai me-2"></i>Naive Bayes
+            </div>
+            <p class="text-muted small mb-0">
+              Probabilistic baseline — fast to train, requires little data,
+              and works naturally with word count features (BoW). Assumes
+              word independence, which is often good enough for sentiment.
+            </p>
+          </div>
+
+          <div class="why-item mb-3">
+            <div class="why-title text-purple">
+              <i class="fas fa-chart-line me-2"></i>Logistic Regression
+            </div>
+            <p class="text-muted small mb-0">
+              Strong linear classifier for high-dimensional sparse text data.
+              Pairs excellently with TF-IDF. Provides probability outputs for
+              confidence scores. Interpretable and computationally efficient.
+            </p>
+          </div>
+
+          <div class="why-item">
+            <div class="why-title text-gold">
+              <i class="fas fa-network-wired me-2"></i>Neural Network (MLP)
+            </div>
+            <p class="text-muted small mb-0">
+              Non-linear model capable of capturing complex patterns.
+              Uses a single hidden layer of 100 neurons as a representative
+              deep learning comparison. Slightly slower but competitive accuracy.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Results summary ────────────────────────────────────────────── -->
+    <div class="glass-card p-4">
+      <h5 class="mb-4"><i class="fas fa-award me-2 text-gold"></i>Results Summary</h5>
+      <div class="row g-3 text-center">
+        <div class="col-6 col-md-3">
+          <div class="result-summary-box">
+            <div class="rs-val gradient-text">89.21%</div>
+            <div class="rs-label">Best Accuracy</div>
+            <div class="rs-sub text-muted small">LR + TF-IDF</div>
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="result-summary-box">
+            <div class="rs-val text-purple">89.44%</div>
+            <div class="rs-label">Best Precision</div>
+            <div class="rs-sub text-muted small">LR + TF-IDF</div>
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="result-summary-box">
+            <div class="rs-val text-blue">88.95%</div>
+            <div class="rs-label">Best Recall</div>
+            <div class="rs-sub text-muted small">LR + TF-IDF</div>
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="result-summary-box">
+            <div class="rs-val text-teal">89.19%</div>
+            <div class="rs-label">Best F1-Score</div>
+            <div class="rs-sub text-muted small">LR + TF-IDF</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+{% endblock %}

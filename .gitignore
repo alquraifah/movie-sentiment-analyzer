@@ -1,0 +1,35 @@
+# ── Training dataset ─────────────────────────────────────────────────────────
+# 64 MB CSV — not needed for deployment, train locally then commit models/
+data/
+
+# ── Large model files not used by app.py ─────────────────────────────────────
+# These are only built during training; app.py only loads the two files below:
+#   models/logistic_regression_model.pkl   (40 KB)  ← KEEP (commit this)
+#   models/tfidf_vectorizer.pkl            (175 KB) ← KEEP (commit this)
+#   models/metrics.json                    (1 KB)   ← KEEP (commit this)
+#   models/shapes.json                     (0.1 KB) ← KEEP (commit this)
+models/nb_tfidf_model.pkl
+models/nb_bow_model.pkl
+models/lr_bow_model.pkl
+models/mlp_tfidf_model.pkl
+models/bow_vectorizer.pkl
+
+# ── Python ────────────────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+
+# ── Virtual environments ──────────────────────────────────────────────────────
+venv/
+.venv/
+env/
+ENV/
+.env
+
+# ── IDE / OS ──────────────────────────────────────────────────────────────────
+.vscode/
+.idea/
+*.DS_Store
+Thumbs.db

@@ -1,0 +1,290 @@
+{% extends "base.html" %}
+{% block title %}Analyzer – Movie Sentiment{% endblock %}
+
+{% block content %}
+
+<section class="section-padded">
+  <div class="container">
+
+    <!-- ── Header ─────────────────────────────────────────────────────────── -->
+    <div class="section-header text-center mb-5">
+      <span class="section-tag"><i class="fas fa-wand-magic-sparkles me-1"></i>Live Prediction</span>
+      <h2 class="section-title">Review Sentiment Analyzer</h2>
+      <p class="section-sub">
+        Enter any movie review below. The model will classify it as
+        <span class="text-positive fw-bold">Positive</span> or
+        <span class="text-negative fw-bold">Negative</span> with a real confidence score.
+      </p>
+
+      <!-- Model status badge -->
+      {% if models_ready %}
+      <div class="model-status-badge status-ready mt-3">
+        <span class="status-dot dot-ready"></span>
+        <i class="fas fa-circle-check me-2"></i>
+        Real ML Model Active &nbsp;—&nbsp; Logistic Regression + TF-IDF
+      </div>
+      {% else %}
+      <div class="model-status-badge status-not-ready mt-3">
+        <span class="status-dot dot-not-ready"></span>
+        <i class="fas fa-triangle-exclamation me-2"></i>
+        Model Not Trained
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- ── Model not trained — show instructions instead of the form ─────── -->
+    {% if not models_ready %}
+    <div class="row justify-content-center">
+      <div class="col-lg-7">
+        <div class="not-trained-box text-center">
+          <div class="nt-icon"><i class="fas fa-gear"></i></div>
+          <h4 class="mt-3 mb-2">Model Files Not Found</h4>
+          <p class="text-muted mb-4">
+            The trained model has not been generated yet.<br>
+            Follow the steps below to train and start the application.
+          </p>
+
+          <div class="run-steps text-start">
+            <div class="run-step">
+              <span class="run-step-num">Step 1</span>
+              <div>
+                <div class="run-step-label">Place the dataset</div>
+                <div class="run-code">data/IMDB Dataset.csv</div>
+              </div>
+            </div>
+            <div class="run-step">
+              <span class="run-step-num">Step 2</span>
+              <div>
+                <div class="run-step-label">Train the model</div>
+                <div class="run-code">python train_model.py</div>
+              </div>
+            </div>
+            <div class="run-step">
+              <span class="run-step-num">Step 3</span>
+              <div>
+                <div class="run-step-label">Start the web app</div>
+                <div class="run-code">python app.py</div>
+              </div>
+            </div>
+          </div>
+
+          <p class="text-muted small mt-4 mb-0">
+            Training takes approximately 5–15 minutes depending on your machine.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    {% else %}
+
+    <!-- ── Analyzer form (only shown when model is ready) ────────────────── -->
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+
+        <!-- Input card -->
+        <div class="glass-card p-4 mb-4">
+          <label class="form-label fw-semibold mb-2">
+            <i class="fas fa-pen-to-square me-2 text-purple"></i>Your Movie Review
+          </label>
+
+          <textarea id="reviewText"
+                    class="form-control review-textarea"
+                    rows="7"
+                    maxlength="5000"
+                    placeholder="Paste or type a movie review here…&#10;&#10;Example: &quot;An absolute masterpiece. The storytelling is breathtaking and the performances are out of this world.&quot;"></textarea>
+
+          <div class="d-flex justify-content-between align-items-center mt-2">
+            <span id="charCount" class="text-muted small">0 / 5000 characters</span>
+            <button class="btn btn-ghost" onclick="clearReview()">
+              <i class="fas fa-xmark me-1"></i>Clear
+            </button>
+          </div>
+
+          <!-- Sample buttons -->
+          <div class="mt-3">
+            <span class="text-muted small me-2">Load a sample:</span>
+            <button class="btn btn-sample btn-sample-pos" onclick="loadSample('positive')">
+              <i class="fas fa-thumbs-up me-1"></i>Positive
+            </button>
+            <button class="btn btn-sample btn-sample-neg ms-2" onclick="loadSample('negative')">
+              <i class="fas fa-thumbs-down me-1"></i>Negative
+            </button>
+          </div>
+        </div>
+
+        <!-- Analyze button -->
+        <div class="text-center mb-4">
+          <button id="analyzeBtn" class="btn btn-glow btn-lg px-5" onclick="analyzeSentiment()">
+            <i class="fas fa-wand-magic-sparkles me-2"></i>Analyze Sentiment
+          </button>
+        </div>
+
+        <!-- Loading state -->
+        <div id="loadingSection" class="text-center mb-4" style="display:none;">
+          <div class="spinner-ring mx-auto mb-3"></div>
+          <p class="text-muted small">Running the ML model on your review…</p>
+        </div>
+
+        <!-- ── Result card ──────────────────────────────────────────────── -->
+        <div id="resultSection" class="result-card" style="display:none;">
+          <div class="result-inner">
+
+            <!-- Model watermark -->
+            <div class="result-model-tag">
+              <i class="fas fa-circle-check me-1"></i>
+              Real ML Model &nbsp;·&nbsp; Logistic Regression + TF-IDF
+            </div>
+
+            <!-- Sentiment -->
+            <div class="result-sentiment mt-3">
+              <div id="sentimentIconWrap" class="sentiment-icon-wrap">
+                <i id="sentimentIconFA" class="fas fa-thumbs-up"></i>
+              </div>
+              <div>
+                <p class="result-label-small mb-0">Prediction</p>
+                <h2 id="sentimentLabel" class="result-label mb-0">POSITIVE</h2>
+              </div>
+            </div>
+
+            <!-- Confidence bar -->
+            <div class="result-confidence mt-4">
+              <div class="d-flex justify-content-between mb-1">
+                <span class="text-muted small">Model Confidence</span>
+                <span id="confidenceText" class="fw-bold text-white">—</span>
+              </div>
+              <div class="confidence-track">
+                <div id="confidenceBar" class="confidence-fill" style="width:0%"></div>
+              </div>
+              <div id="confidenceLevel" class="text-muted small mt-1 text-end"></div>
+            </div>
+
+            <!-- Chips -->
+            <div id="resultChips" class="result-chips mt-4"></div>
+
+          </div>
+        </div>
+
+        <!-- Error message -->
+        <div id="errorMsg" class="error-banner" style="display:none;">
+          <i class="fas fa-circle-xmark me-2"></i>
+          <span id="errorText"></span>
+        </div>
+
+      </div>
+    </div>
+    {% endif %}
+
+  </div>
+</section>
+
+{% endblock %}
+
+{% block extra_scripts %}
+{% if models_ready %}
+<script>
+const SAMPLES = {
+  positive: `This film is an absolute masterpiece. The storytelling is breathtaking, the performances are out of this world, and the cinematography is stunningly beautiful. I was completely captivated from start to finish. One of the best movies I have ever seen — a perfect blend of emotion and visual artistry.`,
+  negative: `What a complete waste of time. The plot made no sense, the acting was terrible and felt forced throughout. I was bored within the first ten minutes and the ending was absolutely dreadful. The script is poorly written and the direction is flat. I cannot recommend this film to anyone.`,
+};
+
+document.getElementById("reviewText").addEventListener("input", function () {
+  document.getElementById("charCount").textContent = `${this.value.length} / 5000 characters`;
+});
+
+function loadSample(type) {
+  const ta = document.getElementById("reviewText");
+  ta.value = SAMPLES[type];
+  document.getElementById("charCount").textContent = `${ta.value.length} / 5000 characters`;
+  hideResults();
+}
+
+function clearReview() {
+  document.getElementById("reviewText").value = "";
+  document.getElementById("charCount").textContent = "0 / 5000 characters";
+  hideResults();
+}
+
+function hideResults() {
+  document.getElementById("resultSection").style.display = "none";
+  document.getElementById("errorMsg").style.display = "none";
+}
+
+async function analyzeSentiment() {
+  const review = document.getElementById("reviewText").value.trim();
+  if (!review) {
+    showError("Please enter a movie review before analyzing.");
+    return;
+  }
+
+  hideResults();
+  document.getElementById("loadingSection").style.display = "block";
+  document.getElementById("analyzeBtn").disabled = true;
+
+  try {
+    const res  = await fetch("/predict", {
+      method:  "POST",
+      headers: { "Content-Type": "application/json" },
+      body:    JSON.stringify({ review }),
+    });
+    const data = await res.json();
+
+    if (res.status === 503) {
+      showError("Model not ready. Please run python train_model.py first.");
+      return;
+    }
+    if (!res.ok) {
+      showError(data.error || "An unexpected error occurred.");
+      return;
+    }
+    displayResult(data);
+
+  } catch {
+    showError("Connection error — please ensure app.py is running.");
+  } finally {
+    document.getElementById("loadingSection").style.display = "none";
+    document.getElementById("analyzeBtn").disabled = false;
+  }
+}
+
+function displayResult({ sentiment, confidence }) {
+  const isPos     = sentiment === "positive";
+  const iconWrap  = document.getElementById("sentimentIconWrap");
+  const iconEl    = document.getElementById("sentimentIconFA");
+  const label     = document.getElementById("sentimentLabel");
+  const confText  = document.getElementById("confidenceText");
+  const confBar   = document.getElementById("confidenceBar");
+  const confLevel = document.getElementById("confidenceLevel");
+  const chips     = document.getElementById("resultChips");
+  const section   = document.getElementById("resultSection");
+
+  label.textContent   = isPos ? "POSITIVE" : "NEGATIVE";
+  iconEl.className    = isPos ? "fas fa-thumbs-up" : "fas fa-thumbs-down";
+  iconWrap.className  = "sentiment-icon-wrap " + (isPos ? "icon-pos" : "icon-neg");
+  confText.textContent = confidence.toFixed(2) + "%";
+
+  // Animate bar from 0 → value
+  confBar.style.width  = "0%";
+  confBar.className    = "confidence-fill " + (isPos ? "fill-pos" : "fill-neg");
+  setTimeout(() => { confBar.style.width = confidence + "%"; }, 60);
+
+  const level = confidence >= 90 ? "Very High" : confidence >= 80 ? "High" : confidence >= 65 ? "Medium" : "Low";
+  confLevel.textContent = level + " confidence";
+
+  chips.innerHTML = `
+    <span class="chip chip-model"><i class="fas fa-brain me-1"></i>Logistic Regression</span>
+    <span class="chip chip-vec"><i class="fas fa-layer-group me-1"></i>TF-IDF (5,000 features)</span>
+    <span class="chip ${isPos ? 'chip-pos' : 'chip-neg'}">
+      <i class="fas fa-gauge me-1"></i>${level} Confidence
+    </span>`;
+
+  section.style.display = "block";
+  section.scrollIntoView({ behavior: "smooth", block: "nearest" });
+}
+
+function showError(msg) {
+  document.getElementById("errorText").textContent = msg;
+  document.getElementById("errorMsg").style.display = "flex";
+}
+</script>
+{% endif %}
+{% endblock %}

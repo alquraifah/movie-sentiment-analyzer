@@ -1,0 +1,200 @@
+{% extends "base.html" %}
+{% block title %}Confusion Matrix – Sentiment{% endblock %}
+
+{% block content %}
+
+<section class="section-padded">
+  <div class="container">
+
+    <!-- Header -->
+    <div class="section-header text-center mb-5">
+      <span class="section-tag"><i class="fas fa-table-cells me-1"></i>Evaluation</span>
+      <h2 class="section-title">Confusion Matrices</h2>
+      <p class="section-sub">
+        Each matrix shows how many predictions were correct and where each model made mistakes.
+        Test set size: <strong>9,917 reviews</strong>.
+      </p>
+      <div class="model-status-badge status-ready mt-3 d-inline-flex">
+        <span class="status-dot dot-ready"></span>
+        <i class="fas fa-circle-check me-2"></i>Real trained model results
+      </div>
+    </div>
+
+    <!-- ── Legend ─────────────────────────────────────────────────────── -->
+    <div class="glass-card p-4 mb-5">
+      <h5 class="mb-4"><i class="fas fa-circle-info me-2 text-purple"></i>Reading a Confusion Matrix</h5>
+      <div class="row g-3">
+        <div class="col-sm-6 col-lg-3">
+          <div class="legend-cell bg-tp">
+            <div class="lc-abbr">TP</div>
+            <div class="lc-name">True Positive</div>
+            <div class="lc-desc text-muted small">
+              Review <strong>is Positive</strong> → model predicted <strong>Positive</strong>. ✓
+            </div>
+          </div>
+        </div>
+        <div class="col-sm-6 col-lg-3">
+          <div class="legend-cell bg-tn">
+            <div class="lc-abbr">TN</div>
+            <div class="lc-name">True Negative</div>
+            <div class="lc-desc text-muted small">
+              Review <strong>is Negative</strong> → model predicted <strong>Negative</strong>. ✓
+            </div>
+          </div>
+        </div>
+        <div class="col-sm-6 col-lg-3">
+          <div class="legend-cell bg-fp">
+            <div class="lc-abbr">FP</div>
+            <div class="lc-name">False Positive</div>
+            <div class="lc-desc text-muted small">
+              Review <strong>is Negative</strong> → model predicted <strong>Positive</strong>. ✗
+            </div>
+          </div>
+        </div>
+        <div class="col-sm-6 col-lg-3">
+          <div class="legend-cell bg-fn">
+            <div class="lc-abbr">FN</div>
+            <div class="lc-name">False Negative</div>
+            <div class="lc-desc text-muted small">
+              Review <strong>is Positive</strong> → model predicted <strong>Negative</strong>. ✗
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Axis explanation -->
+      <div class="axis-note mt-4 text-muted small text-center">
+        <i class="fas fa-arrows-left-right me-1"></i>
+        <strong>Columns</strong> = Predicted label &nbsp;|&nbsp;
+        <i class="fas fa-arrows-up-down me-1"></i>
+        <strong>Rows</strong> = Actual label
+      </div>
+    </div>
+
+    <!-- ── Matrices grid ──────────────────────────────────────────────── -->
+    <div class="row g-4">
+      {% for name, m in metrics.items() %}
+      {% set cm = m.confusion_matrix %}
+      {% set tn = cm[0][0] %}
+      {% set fp = cm[0][1] %}
+      {% set fn = cm[1][0] %}
+      {% set tp = cm[1][1] %}
+      {% set total = tn + fp + fn + tp %}
+
+      <div class="col-md-6 col-xl-4">
+        <div class="glass-card p-4 h-100">
+
+          <!-- Model name -->
+          <h6 class="fw-semibold mb-1">{{ name }}</h6>
+          <p class="text-muted small mb-3">
+            Accuracy: <strong class="text-white">{{ "%.2f"|format(m.accuracy * 100) }}%</strong>
+            &nbsp;|&nbsp; F1: <strong class="text-white">{{ "%.4f"|format(m.f1) }}</strong>
+          </p>
+
+          <!-- Axis labels -->
+          <div class="cm-wrapper">
+            <div class="cm-axis-y">
+              <span>Actual</span>
+              <div class="cm-axis-y-labels">
+                <span>NEG</span>
+                <span>POS</span>
+              </div>
+            </div>
+
+            <div class="cm-content">
+              <!-- Predicted labels -->
+              <div class="cm-axis-x">
+                <span></span>
+                <span>Predicted NEG</span>
+                <span>Predicted POS</span>
+              </div>
+
+              <!-- 2×2 grid -->
+              <div class="cm-grid">
+                <!-- Row 0: Actual Negative -->
+                <div class="cm-cell-wrap bg-tn-cell">
+                  <div class="cm-abbr">TN</div>
+                  <div class="cm-count">{{ tn }}</div>
+                  <div class="cm-pct">{{ "%.1f"|format(tn / total * 100) }}%</div>
+                </div>
+                <div class="cm-cell-wrap bg-fp-cell">
+                  <div class="cm-abbr">FP</div>
+                  <div class="cm-count">{{ fp }}</div>
+                  <div class="cm-pct">{{ "%.1f"|format(fp / total * 100) }}%</div>
+                </div>
+                <!-- Row 1: Actual Positive -->
+                <div class="cm-cell-wrap bg-fn-cell">
+                  <div class="cm-abbr">FN</div>
+                  <div class="cm-count">{{ fn }}</div>
+                  <div class="cm-pct">{{ "%.1f"|format(fn / total * 100) }}%</div>
+                </div>
+                <div class="cm-cell-wrap bg-tp-cell">
+                  <div class="cm-abbr">TP</div>
+                  <div class="cm-count">{{ tp }}</div>
+                  <div class="cm-pct">{{ "%.1f"|format(tp / total * 100) }}%</div>
+                </div>
+              </div><!-- /cm-grid -->
+
+            </div><!-- /cm-content -->
+          </div><!-- /cm-wrapper -->
+
+          <!-- Mini stats -->
+          <div class="cm-stats mt-3">
+            <div class="cm-stat">
+              <span class="text-positive">{{ tn + tp }}</span>
+              <span class="text-muted small">Correct</span>
+            </div>
+            <div class="cm-stat">
+              <span class="text-negative">{{ fp + fn }}</span>
+              <span class="text-muted small">Wrong</span>
+            </div>
+            <div class="cm-stat">
+              <span class="text-white">{{ total }}</span>
+              <span class="text-muted small">Total</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+      {% endfor %}
+    </div><!-- /row -->
+
+    <!-- ── Formula reference ─────────────────────────────────────────── -->
+    <div class="glass-card p-4 mt-5">
+      <h5 class="mb-4"><i class="fas fa-calculator me-2 text-blue"></i>Metric Formulas</h5>
+      <div class="row g-3">
+        <div class="col-sm-6 col-lg-3">
+          <div class="formula-ref">
+            <div class="fr-name text-purple">Accuracy</div>
+            <div class="fr-eq">(TP + TN) / Total</div>
+            <div class="fr-desc text-muted small">Overall correct rate</div>
+          </div>
+        </div>
+        <div class="col-sm-6 col-lg-3">
+          <div class="formula-ref">
+            <div class="fr-name text-blue">Precision</div>
+            <div class="fr-eq">TP / (TP + FP)</div>
+            <div class="fr-desc text-muted small">Of predicted positives, how many are real?</div>
+          </div>
+        </div>
+        <div class="col-sm-6 col-lg-3">
+          <div class="formula-ref">
+            <div class="fr-name text-teal">Recall</div>
+            <div class="fr-eq">TP / (TP + FN)</div>
+            <div class="fr-desc text-muted small">Of actual positives, how many were found?</div>
+          </div>
+        </div>
+        <div class="col-sm-6 col-lg-3">
+          <div class="formula-ref">
+            <div class="fr-name text-gold">F1-Score</div>
+            <div class="fr-eq">2 × (P × R) / (P + R)</div>
+            <div class="fr-desc text-muted small">Harmonic mean of Precision &amp; Recall</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+{% endblock %}
